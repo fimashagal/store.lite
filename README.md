@@ -87,7 +87,7 @@ Also u can use few arguments for group test
   store.isRanged("propertyNumber"); // false
 ```
 
-## Add/remove immutability lock for any type property and for nested values in object-like type property
+## Add/remove immutability lock 
 
 ```javascript
 
