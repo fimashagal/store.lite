@@ -101,7 +101,7 @@ class Store {
         return this._isFeatured('_lockeds', key);
     }
 
-    exportData(...exportKeys) {
+    exportStore(...exportKeys) {
         let response = {};
         for(let [key, data] of Object.entries(this._)){
             response[key] = data.value;

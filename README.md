@@ -50,7 +50,7 @@ Lite strong type store 🚲 Work just with scalar volumes
     new Store({
         propertyNumber: 0
     })
-    .exportData();
+    .exportStore();
   
 ```
 
