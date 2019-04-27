@@ -19,6 +19,15 @@ Lite strong type store 🚲 Work just with scalar volumes
 
 ```
 
+Also u can use multykeys for create few same volumes
+
+```javascript
+    const store = new Store();
+    store.addVolume("flagA flagB flagC", false);
+
+```
+
+
 ## Add/remove reflect to change property value
 ```javascript
     const store = new Store({
@@ -71,7 +80,8 @@ Also u can use few arguments for group test
   const store = new Store({
       propertyNumber: 0
   });
-
+  
+  // support multykeys
   store
       .addRange("propertyNumber", [-10, 10], console.log, console.log)
       .addReflect("propertyNumber", console.log);
@@ -80,7 +90,7 @@ Also u can use few arguments for group test
       store.propertyNumber = i;
   }
   
-  // If need remove range
+  // If need remove range (support multykeys)
   store.removeRange("propertyNumber"); 
   
   // If need detect ranged
@@ -95,6 +105,7 @@ Also u can use few arguments for group test
           propertyNumber: 0
       });
 
+  // support multykeys
   store
       .addReflect("propertyNumber", console.log)
       .addLock("propertyNumber");
@@ -104,7 +115,7 @@ Also u can use few arguments for group test
   // If need detect lock
   store.isLocked("propertyNumber"); // true
   
-  // If need remove lock
+  // If need remove lock  (support multykeys)
   store.removeLock("propertyNumber"); 
   
 ```
