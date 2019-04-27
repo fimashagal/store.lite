@@ -8,15 +8,18 @@
     <title>Document</title>
 </head>
 <body>
-    <script src="store.lite.min.js"></script>
+    <script src="store.lite.js"></script>
     <script>
-        let a = new Store({
-            a: 1,
-            b: {},
-            c: "ds",
-            d: false
-        });
-        console.log(a.exportData());
+        let a = new Store();
+        a.addVolume("a b c", 0);
+        a.addReflect("a b c", value => console.log(`Change to ${value}`));
+        a.a += 1;
+        a.b += 1;
+        a.c += 1;
+        a.removeReflect("a b");
+        a.a += 1;
+        a.b += 1;
+        a.c += 1;
     </script>
 </body>
 </html>

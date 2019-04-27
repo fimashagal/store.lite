@@ -25,60 +25,131 @@ class Store {
     }
 
     addVolume(key, value){
-        const volume = this._filterData({[key]: value});
-        let valueType = this._typeOf(volume[key]);
-        if(valueType === "number" || valueType === "string" || valueType === "boolean" ){
-            this._[key] = {
-                value: volume[key],
-                type: valueType
-            };
-            this._accessorify({ key, valueType });
-        }
+        const hit = key => {
+            const volume = this._filterData({[key]: value});
+            let valueType = this._typeOf(volume[key]);
+            if(valueType === "number" || valueType === "string" || valueType === "boolean" ){
+                this._[key] = {
+                    value: volume[key],
+                    type: valueType
+                };
+                this._accessorify({ key, valueType });
+            }
+        };
+        this._checkMultyKey({
+            string: key,
+            callbackSingle(single){
+                hit(single);
+            },
+            callbackMulty(keys){
+                for(let item of keys){
+
+                    hit(item);
+                }
+            }
+        });
+        return this;
     }
 
     addReflect(key, fn, jerk = false){
-        if(key in this && this._isFn(fn)) {
-            this._reflects[key] = fn;
-            if(typeof jerk === "boolean" && jerk === true){
-                this._reflect(key, this._[key].value);
+        const hit = key => {
+            if(key in this && this._isFn(fn)) {
+                this._reflects[key] = fn;
+                if(typeof jerk === "boolean" && jerk === true){
+                    this._reflect(key, this._[key].value);
+                }
             }
-        }
+        };
+        this._checkMultyKey({
+            string: key,
+            callbackSingle(single){
+                hit(single);
+            },
+            callbackMulty(keys){
+                for(let item of keys){
+                    hit(item);
+                }
+            }
+        });
         return this;
     }
 
     removeReflect(key){
-        delete this._reflects[key];
+        const hit = key => {
+            delete this._reflects[key];
+        };
+        this._checkMultyKey({
+            string: key,
+            callbackSingle(single){
+                hit(single);
+            },
+            callbackMulty(keys){
+                for(let item of keys){
+                    hit(item);
+                }
+            }
+        });
         return this;
     }
 
     addRange(key, range, minReflect, maxReflect){
-        if(this._typeOf(this[key]) !== "number"
-            || !Array.isArray(range)
-            || range.length !== 2
-            || !range.every(item => this._isNum(item))) return;
+        const hit = () => {
+            if(this._typeOf(this[key]) !== "number"
+                || !Array.isArray(range)
+                || range.length !== 2
+                || !range.every(item => this._isNum(item))) return;
 
-        if(range[1] < range[0]) {
-            range.reverse();
-        }
+            if(range[1] < range[0]) {
+                range.reverse();
+            }
 
-        this._rangedNumbers[key] = { range: range };
-        let rangeObject = this._rangedNumbers[key];
-        if(this._isFn(minReflect)) {
-            rangeObject.minReflect = minReflect;
-        }
-        if(this._isFn(maxReflect)) {
-            rangeObject.maxReflect = maxReflect;
-        }
+            this._rangedNumbers[key] = { range: range };
+            let rangeObject = this._rangedNumbers[key];
+            if(this._isFn(minReflect)) {
+                rangeObject.minReflect = minReflect;
+            }
+            if(this._isFn(maxReflect)) {
+                rangeObject.maxReflect = maxReflect;
+            }
 
-        this._rangedNumbers[key] = Object.freeze(rangeObject);
+            this._rangedNumbers[key] = Object.freeze(rangeObject);
 
-        this[key] = this._holdInRange(key, this[key]);
+            this[key] = this._holdInRange(key, this[key]);
+
+        };
+
+        this._checkMultyKey({
+            string: key,
+            callbackSingle(single){
+                hit(single);
+            },
+            callbackMulty(keys){
+                for(let item of keys){
+                    hit(item);
+                }
+            }
+        });
 
         return this;
     }
 
     removeRange(key){
-        delete this._rangedNumbers[key];
+        const hit = () => {
+            delete this._rangedNumbers[key];
+        };
+
+        this._checkMultyKey({
+            string: key,
+            callbackSingle(single){
+                hit(single);
+            },
+            callbackMulty(keys){
+                for(let item of keys){
+                    hit(item);
+                }
+            }
+        });
+
         return this;
     }
 
@@ -87,13 +158,39 @@ class Store {
     }
 
     addLock(key){
-        if(!key in this && !key in this._lockeds) return;
-        this._lockeds[key] = true;
+        const hit = () => {
+            if(!key in this && !key in this._lockeds) return;
+            this._lockeds[key] = true;
+        };
+        this._checkMultyKey({
+            string: key,
+            callbackSingle(single){
+                hit(single);
+            },
+            callbackMulty(keys){
+                for(let item of keys){
+                    hit(item);
+                }
+            }
+        });
         return this;
     };
 
     removeLock(key){
-        delete this._lockeds[key];
+        const hit = () => {
+            delete this._lockeds[key];
+        };
+        this._checkMultyKey({
+            string: key,
+            callbackSingle(single){
+                hit(single);
+            },
+            callbackMulty(keys){
+                for(let item of keys){
+                    hit(item);
+                }
+            }
+        });
         return this;
     }
 
@@ -209,6 +306,20 @@ class Store {
                 }
             }
         });
+    }
+
+    _checkMultyKey(options = {}){
+        const {string, callbackMulty, callbackSingle} = options;
+        const keys = string.trim().split(" ").filter(item => item !== "");
+        if(keys.length){
+            if(keys.length === 1){
+                callbackSingle(keys[0]);
+            }
+            if(keys.length > 1){
+                callbackMulty(keys);
+            }
+        }
+        return;
     }
 
 }
